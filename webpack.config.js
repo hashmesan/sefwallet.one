@@ -39,7 +39,7 @@ module.exports = {
     devtool: 'inline-source-map',
     output: {
         filename: '[name].[contenthash].js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'public')
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
@@ -62,7 +62,7 @@ module.exports = {
 //            { from: './js', to: "./js" },
            { from: './images', to: "./images" },
             { from: './public', to: "./public" },
-            { from: './CNAME', to: "./" },  // to prevent github resetting our domain 
+            { from: './CNAME', to: "." },  // to prevent github resetting our domain 
           ])
     ]
 };
