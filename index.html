@@ -3,21 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sef One wallet</title>
-    <style>
-        .center {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .container {
-            padding-top: 20vh;
-        }
-    </style>
+    <title>Sef Wallet - Smart wallet on</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="icon" href="images/icon.png" type="image/x-icon">
+
+<link href="site.css" rel="stylesheet"/>
+
 </head>
 <body>
-    <div class="container">
-        <img src="animated_sef.gif" width="700" class="center"/>
+    <nav class="site-header sticky-top py-1">
+        <div class="container d-flex flex-column flex-md-row justify-content-between">
+            <a class="d-none py-2 d-md-inline-block text-white" href="#">
+                Sef Wallet
+            </a>
+            <a class="py-2 d-none d-md-inline-block" href="#features">Features</a>
+            <a class="py-2 d-none d-md-inline-block" href="#security">Advanced Security</a>
+            <a class="py-2 d-none d-md-inline-block" href="#earn">Earn</a>
+            <a class="py-2 d-none d-md-inline-block" href="https://sefwallet.gitbook.io/">Docs</a>            
+            <a class="py-2 d-none d-md-inline-block" href="info.html">Info</a>
+            <a class="d-none d-md-inline-block btn btn-primary text-white btn-sm m-1" href="guardian.html">Guardian App</a>
+        </div>
+    </nav>
+    
+    <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 bg-light">
+        <div class="col-md-12 p-lg-12 mx-auto my-12" id="hero">
+            <img src="images/sefwallet_logo.svg" width="80" class="mb-5"/>
+            <div class="bottom-content">
+            <h1 class="display-4 font-weight-normal">BUILT FOR HARMONY</h1>
+            <p class="lead font-weight-normal">Send. Swap. Connect.</p>
+            <a class="btn btn-outline-secondary" href="https://t.me/sefwallet">Join Telegram Channel</a>
+            <a class="btn btn-outline-secondary" href="#">Coming soon</a>
+        </div>
+            <img src="images/main_shot.png" class="d-none  d-md-block product-device"/>
+        </div>
     </div>
+    
+    <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+        <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div class="my-3 p-3">
+                <h2 class="display-5">Send</h2>
+                <p class="lead">Send, receive with ease. Supports HRC-20 & custom tokens.</p>
+            </div>
+            <div style="background-image: url('./images/send.png')" class="product-image3"></div>
+        </div>
+        <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div class="my-3 p-3">
+                <h2 class="display-5">Swap</h2>
+                <p class="lead">Swap from hundreds of tokens on Harmony via Sushiswap & Viperswap.</p>
+            </div>
+
+            <div style="background-image: url('./images/swap.png')" class="product-image3"></div>
+        </div>
+        <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div class="my-3 p-3">
+                <h2 class="display-5">Connect</h2>
+                <p class="lead">Connect to any Dapp with WalletConnect from the safety of Sef Wallet.</p>
+            </div>
+            <div style="background-image: url('./images/walletconnect.png')" class="product-image3"></div>
+        </div>
+    </div>
+    
+    <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
+        <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div class="my-3 py-3">
+                <h2 class="display-5 mb-5">Advanced Security</h2>
+                <ul>
+                    <li><p><b>Guardians</b> - Customize your security with one, or multiple devices/or keys owned by others to protect your wallet</p></li>
+                    <li><p><b>Sessions</b> - Use your wallet in full access mode and tighter secure otherwise.</p></li>
+                    <li>
+                        <p><b>Spending Limit</b> - Limits large spending to guardians approval</p>
+                    </li>
+                    <li>
+                        <p><b>Recovery</b> - No more worrying about writing passphrase down or relying on email or passwords; Sef wallet restores with authenticator (HOTP) codes.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div class="my-3 p-3">
+                <h2 class="display-5 mb-5">Earn</h2>
+                <p>
+                    Earn up to 120% returns on liquidity pool/rewards on SushiSwap.
+                </p>
+            </div>
+            <img src="images/sushifarm2.png"  class="bg-dark box-shadow mx-auto" style="width: 80%; height: 250px; border-radius: 21px 21px 0 0;"/>
+        </div>
+
+    </div>
+    
+    <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3" id="security">
+        <div class="bg-light mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div class="my-3 p-3">
+                <h2 class="display-5 mb-5">Is it secure?</h2>
+                <p class="lead">Based on solid research: SmartOTPs, <br>selected for AFT'20 (Advances in Financial Technologies) ACM <br><a href="https://arxiv.org/pdf/1812.03598.pdf">Read research</a> </p>
+                <p class="lead">Open-source & Transparent <a href="https://github.com/hashmesan/harmony-totp">View Github</a></p>
+                <p class="lead">Security audited <a href="https://github.com/hashmesan/harmony-totp/tree/develop/audit">View audit report</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="container py-5">
+        <div class="row">
+            <div class="col-12 col-md">
+                <img src="images/icon.png" width="50"/>
+            </div>
+            <div class="col-6 col-md">
+                <h5>Features</h5>
+                <ul class="list-unstyled text-small">
+                    <li><a class="text-muted" href="#features">Send/Swap/Connect</a></li>
+                    <li><a class="text-muted" href="#security">Advanced Security</a></li>
+                    <li><a class="text-muted" href="#earn">Earn</a></li>
+                    <li><a class="text-muted" href="#secure">Secure</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md">
+                <h5>Resources</h5>
+                <ul class="list-unstyled text-small">
+                    <li><a class="text-muted" href="https://github.com/hashmesan/harmony-totp">Github</a></li>
+                    <li><a class="text-muted" href="support.html">Report an Issue</a></li>
+                    <li><a class="text-muted" href="https://sefwallet.gitbook.io/">Docs</a></li>
+                    <li><a class="text-muted" href="info.html">Info</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md">
+                <h5>Others</h5>
+                <ul class="list-unstyled text-small">
+                    <li><a class="text-muted" href="#">iOS App</a></li>
+                    <li><a class="text-muted" href="#">Android App</a></li>
+                    <li><a class="text-muted" href="https://github.com/hashmesan/sefwallet.one/wiki/Privacy-Policy">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
 </body>
 </html>
