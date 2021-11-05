@@ -26,7 +26,9 @@ const httpLink = new HttpLink({
 const wsLink = new WebSocketLink({
 	uri: 'wss://graph-ws.sefwallet.one:9444/subgraphs/name/sefwallet-subgraph',
 	options: {
-	  reconnect: true
+	  reconnect: true,
+	  timeout: 100000,
+	  minTimeout: 100000
 	}
   });
 
@@ -107,7 +109,8 @@ const SUMMARY_SUBSCRIPTION = gql`
 		feePaid
 		feeCollected
 		currentBlock
-		totalBalance
+		totalDeposits
+		totalWithdrawals
 	}
   }
 `;
@@ -166,9 +169,13 @@ function InfoScreen(props) {
 						<Text>{data.summary.walletCount}</Text>
 					</Group>
 					<Group position="apart">
-						<Text weight={400}>Total ONEs</Text>
-						<Text>N/A</Text>
+						<Text weight={400}>Total Deposits</Text>
+						<Text>{data.summary.totalDeposits}</Text>
 					</Group>
+					<Group position="apart">
+						<Text weight={400}>Locked in Defi</Text>
+						<Text>N/A</Text>
+					</Group>					
 					<Group position="apart">
 						<Text weight={400}>Total # Transactions</Text>
 						<Text>{data.summary.txCount}</Text>
@@ -190,6 +197,10 @@ function InfoScreen(props) {
 						<Text weight={400}>Current Block</Text>
 						<Text>{data.summary.currentBlock}</Text>
 					</Group>
+					<Group position="apart">
+						<Text weight={400}></Text>
+						<Text></Text>
+					</Group>					
 				</Card>
 			</Col>
 			<Col span={12}>
