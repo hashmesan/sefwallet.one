@@ -61,7 +61,7 @@ module.exports = {
 //            { from: './src/index.html', to: "index.html" },
 //            { from: './js', to: "./js" },
            { from: './images', to: "./images" },
-            { from: './public', to: "./public" },
+            //{ from: './public', to: "./public" },
             { from: './CNAME', to: "." },  // to prevent github resetting our domain 
           ])
     ]

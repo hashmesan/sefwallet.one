@@ -6,6 +6,7 @@ import web3utils from 'web3-utils';
 const { toBech32, fromBech32 } = require('@harmony-js/crypto');
 import { getMainDefinition } from '@apollo/client/utilities';
 import { decodeSmartVaultFunction } from "@hashmesan/smartvault/lib/harmony_client";
+import Caculate from "./calculate";
 
 import {
 	ApolloClient,
@@ -140,6 +141,8 @@ function InfoScreen(props) {
 	const [info, setInfo] = React.useState(null);
 	const [txs, setTxs] = React.useState(null);
 	const [page, setPage] = React.useState(1);
+	const [balanceData, setBalanceData] = React.useState(null);
+
 	//const { loading, error, data } = useQuery(GETSUMMARY_QUERY);
 	const { data, loading } = useSubscription(
 		SUMMARY_SUBSCRIPTION,
@@ -154,6 +157,12 @@ function InfoScreen(props) {
 	// 	updateTx()
 	// }, [page])
 
+	React.useLayoutEffect(()=>{
+		new Caculate().computeAll().then(e=>{
+			console.log("PAIR=", e);
+			setBalanceData(e);
+		})
+	},[])
 
 	if(loading || txState.loading) {
 		return <div>Loading...</div>
@@ -169,12 +178,12 @@ function InfoScreen(props) {
 						<Text>{data.summary.walletCount}</Text>
 					</Group>
 					<Group position="apart">
-						<Text weight={400}>Total Deposits</Text>
-						<Text>{data.summary.totalDeposits}</Text>
+						<Text weight={400}>Total Balance</Text>
+						<Text>{!balanceData? "Loading" : "$" + (balanceData.balance + balanceData.totalLocked).toFixed(0)}</Text>
 					</Group>
 					<Group position="apart">
 						<Text weight={400}>Locked in Defi</Text>
-						<Text>N/A</Text>
+						<Text>{!balanceData? "Loading" : "$" + balanceData.totalLocked.toFixed(0)}</Text>
 					</Group>					
 					<Group position="apart">
 						<Text weight={400}>Total # Transactions</Text>
