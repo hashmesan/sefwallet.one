@@ -35,6 +35,7 @@ module.exports = {
       },
     entry: {
       main: ['@babel/polyfill', './src/info.tsx'],
+      guardian: ['@babel/polyfill', './src/guardian.tsx'],
     },
     devtool: 'inline-source-map',
     output: {
@@ -48,7 +49,14 @@ module.exports = {
         new HtmlWebpackPlugin({
           template: "./info.html",
           minify: false,
+          chunks: ['main'],
           filename: "info.html"
+        }),
+        new HtmlWebpackPlugin({
+          template: "./info.html",
+          minify: false,
+          chunks: ['guardian'],
+          filename: "guardian.html"
         }),
         new webpack.DefinePlugin({
           'VERSION': JSON.stringify(gitRevisionPlugin.version()),
