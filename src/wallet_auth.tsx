@@ -16,7 +16,7 @@ function getLibrary(provider: any): Web3Provider | Harmony {
     var library: Web3Provider | Harmony
   
     if (provider?.chainType === 'hmy') {
-      library = provider.blockchain
+      library = provider
     } else {
       library = new Web3Provider(provider)
       library.pollingInterval = 3000

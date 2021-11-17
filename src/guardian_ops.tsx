@@ -6,21 +6,25 @@ import { ethers } from 'ethers';
 const TOTPWallet = require("@hashmesan/smartvault/build/contracts/TOTPWallet.json");
 const Web3 = require('web3');
 import { Contract } from '@ethersproject/contracts'
-
+import { LoadingOverlay } from '@mantine/core';
+import { OneWalletConnector } from '@harmony-react/onewallet-connector'
 
 export default function GuardianOps({}) {
     const [info, setInfo] = React.useState(null);
     const [wallet, setWallet] = React.useState(null);
     const [pageError, setPageError] = React.useState(null);
     const [actions, setActions] = React.useState([]);
+    const [visible, setVisible] = React.useState(false);
 
-    const { active, error, account, activate, library, chainId, deactivate } = useWeb3React()
+    const { connector, active, error, account, activate, library, chainId, deactivate } = useWeb3React()
     const name = new URLSearchParams(window.location.search).get('name');
     const client = new HarmonyClient("https://api.s0.t.hmny.io", "0x3fa4135B88cE1035Fed373F0801118a3340B37e7");
 
+    console.log("library", library, connector, connector instanceof OneWalletConnector);
+
     function loadPage() {
+        setVisible(false);
         client.isNameAvailable(name + ".sefwallet.one", 100).then(e=>{
-            console.log(e);
             if(e.address != ethers.constants.AddressZero) {
                 return client.getSmartVaultInfo(e.address).then(info=>{
                     console.log(info);
@@ -35,7 +39,7 @@ export default function GuardianOps({}) {
                         })
                     }
 
-                    library.getBlock("latest").then(block =>{
+                    client.web3.eth.getBlock("latest").then(block =>{
                         console.log("block", block);
                         if(info.session.expires > block.timestamp && info.session.active == false) 
                         {
@@ -48,14 +52,17 @@ export default function GuardianOps({}) {
                             })
                             setActions(pendingActions);
                         }
+                        setVisible(true);
                     });
                 })
             } else {
                 setPageError("Sef wallet " + name + " not found");
+                setVisible(true);
             }
         }).catch(ex=>{
             console.log(ex);
             setPageError(ex.message);
+            setVisible(true);
         })
     }
     React.useEffect(loadPage,[]);
@@ -64,24 +71,51 @@ export default function GuardianOps({}) {
         <tr key={index}>
           <td><Text size="md">{element.description}</Text></td>
           <td>{element.signed ? "Approved" : <Button onClick={()=>{
-              
-            let contract = new Contract(element.wallet, TOTPWallet.abi, library);
-            const signer = contract.connect(library.getSigner());
+            
+            if(connector instanceof OneWalletConnector) {
+                const contractInstance = library.contracts.createContract(TOTPWallet.abi, element.wallet);
+                const iface = new ethers.utils.Interface(TOTPWallet.abi);
+                var dataHash = iface.functions["startSession"].encode([element.data.expires]);
+                console.log("dataHash", dataHash, connector.bech32Address);
 
-            var dataHash = contract.interface.encodeFunctionData("startSession", [element.data.expires]);
-            console.log(signer, dataHash);
-            signer.guardianApprove(dataHash).then(e=>{
-                console.log("success", e);
-                loadPage();
-            }).catch(ex=>{
-                console.log("ex", ex)
-                alert("Exception: " + ex.message + " " + ex.data.message)
-            })
+                connector.attachToContract(contractInstance).then(signedInstance => {
+                    signedInstance.methods.guardianApprove(dataHash).send({
+                        gasPrice: 2000000000,
+                        gasLimit: 550000,
+                        value: '0',
+                    }).then(tx=>{
+                        console.log("success", tx);
+                        alert("Successful!");
+                        setVisible(false);
+                        setTimeout(loadPage, 5000);
+                    })
+                    .catch(ex=>{
+                        console.log("ex", ex)
+                        alert("Exception: " + ex)
+                    });    
+                })
 
+            } else {
+                let contract = new Contract(element.wallet, TOTPWallet.abi, library);
+                const signer = contract.connect(library.getSigner());
+                var dataHash = contract.interface.encodeFunctionData("startSession", [element.data.expires]);
+                console.log(signer, dataHash);
+                signer.guardianApprove(dataHash).then(tx=>{
+                    console.log("success", tx);
+                    alert("Successful! hash=" + tx.hash);
+                    setVisible(false);
+                    setTimeout(loadPage, 5000);
+    
+                }).catch(ex=>{
+                    console.log("ex", ex)
+                    alert("Exception: " + ex.message + " " + ex.data.message)
+                })    
+            }
           }}>Approve</Button>}</td>
         </tr>));
 
     return <Card>
+            <LoadingOverlay visible={!visible} />
         <div>Connected! {account} target: {name}</div>
         {pageError && <div>{pageError}</div>}
         <Text size="xl">Requires Approval</Text>
