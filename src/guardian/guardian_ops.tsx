@@ -1,6 +1,6 @@
 import React from "react";
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
-import { Container, AppShell, Header, Button, Navbar, Space, Center, Pagination, Table, Text,Image, SimpleGrid, Title, Col, Card, Grid, Group } from '@mantine/core';
+import { Alert, Container, AppShell, Header, Button, Navbar, Space, Center, Pagination, Table, Text,Image, SimpleGrid, Title, Col, Card, Grid, Group } from '@mantine/core';
 import HarmonyClient, { decodeSmartVaultFunction } from "@hashmesan/smartvault/lib/harmony_client";
 import { ethers } from 'ethers';
 const TOTPWallet = require("@hashmesan/smartvault/build/contracts/TOTPWallet.json");
@@ -8,6 +8,7 @@ const Web3 = require('web3');
 import { Contract } from '@ethersproject/contracts'
 import { LoadingOverlay } from '@mantine/core';
 import { OneWalletConnector } from '@harmony-react/onewallet-connector'
+import { CrossCircledIcon} from '@radix-ui/react-icons'
 
 export default function GuardianOps({}) {
     const [info, setInfo] = React.useState(null);
@@ -27,7 +28,19 @@ export default function GuardianOps({}) {
         client.isNameAvailable(name + ".sefwallet.one", 100).then(e=>{
             if(e.address != ethers.constants.AddressZero) {
                 return client.getSmartVaultInfo(e.address).then(info=>{
-                    console.log(info);
+                    console.log(e.address, info);
+
+                    if(info.codeVersion <=2) {
+                        setPageError("Requires wallet >= 2. Need to upgrade wallet first!")
+                        setVisible(true);
+                        return;
+                    }
+                    console.log(info.guardians,info.guardians.includes(account))
+                    if(!info.guardians.includes(account)) {
+                        setPageError("This wallet is not a guardian.")
+                        setVisible(true);
+                        return;
+                    }
                     var pendingActions = [];
                     if(info.pendingRecovery.secretHash != '0x0000000000000000000000000000000000000000000000000000000000000000') {
                         pendingActions.push({
@@ -35,7 +48,7 @@ export default function GuardianOps({}) {
                             type: "recovery",
                             description: "Recovery wallet: " + info.pendingRecovery.secretHash,
                             data: info.pendingRecovery,
-                            signed: account in info.pendingRecovery.guardiansApproved
+                            signed: info.pendingRecovery.guardiansApproved.includes(account)
                         })
                     }
 
@@ -48,10 +61,10 @@ export default function GuardianOps({}) {
                                 type: "session",
                                 description: `New Session, expires: ${info.session.expires} active: ${info.session.active}`,
                                 data: info.session,
-                                signed: account in info.session.guardiansApproved
+                                signed: info.session.guardiansApproved.includes(account)
                             })
-                            setActions(pendingActions);
                         }
+                        setActions(pendingActions);
                         setVisible(true);
                     });
                 })
@@ -67,58 +80,71 @@ export default function GuardianOps({}) {
     }
     React.useEffect(loadPage,[]);
 
+    function submitApprove(wallet, dataHash) {
+        if(connector instanceof OneWalletConnector) {
+            const contractInstance = library.contracts.createContract(TOTPWallet.abi, wallet);
+            console.log("dataHash", dataHash, connector.bech32Address);
+
+            connector.attachToContract(contractInstance).then(signedInstance => {
+                signedInstance.methods.guardianApprove(dataHash).send({
+                    gasPrice: 2000000000,
+                    gasLimit: 550000,
+                    value: '0',
+                }).then(tx=>{
+                    console.log("success", tx);
+                    alert("Successful!");
+                    setVisible(false);
+                    setTimeout(loadPage, 5000);
+                })
+                .catch(ex=>{
+                    console.log("ex", ex)
+                    alert("Exception: " + ex)
+                });    
+            })
+
+        } else {
+            let contract = new Contract(wallet, TOTPWallet.abi, library);
+            const signer = contract.connect(library.getSigner());
+            console.log(signer, dataHash);
+            signer.guardianApprove(dataHash).then(tx=>{
+                console.log("success", tx);
+                alert("Successful! hash=" + tx.hash);
+                setVisible(false);
+                setTimeout(loadPage, 5000);
+            }).catch(ex=>{
+                console.log("ex", ex)
+                alert("Exception: " + ex.message + " " + ex.data.message)
+            })    
+        }
+    }
     const rows = actions.map((element, index) => (
         <tr key={index}>
           <td><Text size="md">{element.description}</Text></td>
           <td>{element.signed ? "Approved" : <Button onClick={()=>{
-            
-            if(connector instanceof OneWalletConnector) {
-                const contractInstance = library.contracts.createContract(TOTPWallet.abi, element.wallet);
-                const iface = new ethers.utils.Interface(TOTPWallet.abi);
+
+            const iface = new ethers.utils.Interface(TOTPWallet.abi);
+            if(element.type == "session") {
                 var dataHash = iface.functions["startSession"].encode([element.data.expires]);
-                console.log("dataHash", dataHash, connector.bech32Address);
-
-                connector.attachToContract(contractInstance).then(signedInstance => {
-                    signedInstance.methods.guardianApprove(dataHash).send({
-                        gasPrice: 2000000000,
-                        gasLimit: 550000,
-                        value: '0',
-                    }).then(tx=>{
-                        console.log("success", tx);
-                        alert("Successful!");
-                        setVisible(false);
-                        setTimeout(loadPage, 5000);
-                    })
-                    .catch(ex=>{
-                        console.log("ex", ex)
-                        alert("Exception: " + ex)
-                    });    
-                })
-
+                submitApprove(element.wallet, dataHash);
             } else {
-                let contract = new Contract(element.wallet, TOTPWallet.abi, library);
-                const signer = contract.connect(library.getSigner());
-                var dataHash = contract.interface.encodeFunctionData("startSession", [element.data.expires]);
-                console.log(signer, dataHash);
-                signer.guardianApprove(dataHash).then(tx=>{
-                    console.log("success", tx);
-                    alert("Successful! hash=" + tx.hash);
-                    setVisible(false);
-                    setTimeout(loadPage, 5000);
-    
-                }).catch(ex=>{
-                    console.log("ex", ex)
-                    alert("Exception: " + ex.message + " " + ex.data.message)
-                })    
+                var dataHash = iface.functions["startRecoverCommit"].encode([element.data.secretHash, element.data.dataHash]);
+                submitApprove(element.wallet, dataHash);
             }
+
           }}>Approve</Button>}</td>
         </tr>));
 
-    return <Card>
+    return <Card shadow="md" padding="xl" radius="xl">
             <LoadingOverlay visible={!visible} />
-        <div>Connected! {account} target: {name}</div>
-        {pageError && <div>{pageError}</div>}
-        <Text size="xl">Requires Approval</Text>
+        <Title>Requires Approval</Title>
+            {pageError &&<Alert
+            color="red"
+            title={pageError}
+            icon={<CrossCircledIcon  />}
+            withCloseButton
+            closeButtonLabel="Dismiss"
+        >{""}</Alert>}
+
         <Space h="md" />
         <Table>
         <thead>

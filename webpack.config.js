@@ -35,7 +35,7 @@ module.exports = {
       },
     entry: {
       main: ['@babel/polyfill', './src/info.tsx'],
-      guardian: ['@babel/polyfill', './src/guardian.tsx'],
+      guardian: ['@babel/polyfill', './src/guardian/index.tsx'],
     },
     devtool: 'inline-source-map',
     output: {
@@ -44,6 +44,9 @@ module.exports = {
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
+    },
+    optimization: {
+      minimize: false
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -56,7 +59,7 @@ module.exports = {
           template: "./info.html",
           minify: false,
           chunks: ['guardian'],
-          filename: "guardian.html"
+          filename: "guardian/index.html"
         }),
         new webpack.DefinePlugin({
           'VERSION': JSON.stringify(gitRevisionPlugin.version()),
@@ -69,6 +72,7 @@ module.exports = {
 //            { from: './src/index.html', to: "index.html" },
 //            { from: './js', to: "./js" },
            { from: './images', to: "./images" },
+           { from: './images', to: "./guardian/images" },
             //{ from: './public', to: "./public" },
             { from: './CNAME', to: "." },  // to prevent github resetting our domain 
           ])

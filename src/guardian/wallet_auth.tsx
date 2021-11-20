@@ -1,8 +1,6 @@
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
 import React from "react";
 import { Container, AppShell, Anchor, Header, Navbar, Space, Center, Pagination, Table, Text,Image, SimpleGrid, Title, Col, Card, Grid, Group } from '@mantine/core';
-import { Web3Provider } from '@ethersproject/providers'
-import { Harmony } from '@harmony-js/core'
 import {useLocation} from "react-router-dom";
 import GuardianOps from "./guardian_ops";
 
@@ -12,18 +10,6 @@ import { OneWalletConnector } from '@harmony-react/onewallet-connector'
 export const injected = new InjectedConnector({ supportedChainIds: [1666600000] })
 export const onewallet = new OneWalletConnector({ chainId: 1 })
 
-function getLibrary(provider: any): Web3Provider | Harmony {
-    var library: Web3Provider | Harmony
-  
-    if (provider?.chainType === 'hmy') {
-      library = provider
-    } else {
-      library = new Web3Provider(provider)
-      library.pollingInterval = 3000
-    }
-  
-    return library
-}
 
 function WalletButton({image, name, ...props}) {
 
@@ -68,5 +54,5 @@ function WalletAuth({}) {
 }
 
 export default function() {
-    return <Web3ReactProvider getLibrary={getLibrary}><WalletAuth/></Web3ReactProvider>
+    return <WalletAuth/>
 }
