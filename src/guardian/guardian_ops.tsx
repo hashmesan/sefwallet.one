@@ -36,11 +36,11 @@ export default function GuardianOps({}) {
                         return;
                     }
                     console.log(info.guardians,info.guardians.includes(account))
-                    // if(!info.guardians.includes(account)) {
-                    //     setPageError("This wallet is not a guardian.")
-                    //     setVisible(true);
-                    //     return;
-                    // }
+                    if(!info.guardians.includes(account)) {
+                        setPageError("This wallet is not a guardian.")
+                        setVisible(true);
+                        return;
+                    }
                     var pendingActions = [];
                     if(info.pendingRecovery.secretHash != '0x0000000000000000000000000000000000000000000000000000000000000000') {
                         pendingActions.push({
