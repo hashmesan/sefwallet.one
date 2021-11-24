@@ -36,17 +36,17 @@ export default function GuardianOps({}) {
                         return;
                     }
                     console.log(info.guardians,info.guardians.includes(account))
-                    if(!info.guardians.includes(account)) {
-                        setPageError("This wallet is not a guardian.")
-                        setVisible(true);
-                        return;
-                    }
+                    // if(!info.guardians.includes(account)) {
+                    //     setPageError("This wallet is not a guardian.")
+                    //     setVisible(true);
+                    //     return;
+                    // }
                     var pendingActions = [];
                     if(info.pendingRecovery.secretHash != '0x0000000000000000000000000000000000000000000000000000000000000000') {
                         pendingActions.push({
                             wallet: e.address, 
                             type: "recovery",
-                            description: "Recovery wallet: " + info.pendingRecovery.secretHash,
+                            description: "Recovery wallet: " + info.pendingRecovery.secretHash.substr(0,5) + "..." + info.pendingRecovery.secretHash.substr(-4),
                             data: info.pendingRecovery,
                             signed: info.pendingRecovery.guardiansApproved.includes(account)
                         })
@@ -59,7 +59,7 @@ export default function GuardianOps({}) {
                             pendingActions.push({
                                 wallet: e.address, 
                                 type: "session",
-                                description: `New Session, expires: ${info.session.expires} active: ${info.session.active}`,
+                                description: `New Session, expires: ${info.session.expires}`,
                                 data: info.session,
                                 signed: info.session.guardiansApproved.includes(account)
                             })
