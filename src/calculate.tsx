@@ -101,13 +101,14 @@ export default class Caculate {
         const onePrice = Number(tokenData.bundles[0].ethPrice);
         const wallets = lodash.keyBy(transferData.wallets, 'id');
         const totalBalance = Number(transferData.summaries[0].totalDeposits) - transferData.summaries[0].totalWithdrawals;
-        console.log("XX", totalBalance, totalBalance*Number(onePrice));
+        console.log("XX", onePrice, totalBalance, totalBalance*Number(onePrice));
         const { transferEnriched, totalUSD } = this.computeTokenBalance(transferData.transferSummaries, tokens, wallets, onePrice)
-        const totalLocked = await this.computeLockedDefi(transferData);
+        const totalLocked = await this.computeLockedDefi(transferData, tokens);
         
         return {
             balance: totalUSD,
-            totalLocked: totalLocked
+            totalLocked: totalLocked,
+            estimateONE: ((totalUSD+totalLocked)/onePrice).toFixed(0)
         }
     }
 
@@ -138,7 +139,7 @@ export default class Caculate {
         }
     }
 
-    async computeLockedDefi(transferData) {
+    async computeLockedDefi(transferData, tokens) {
         const pairs = await this.getSushiFactories();
         const transfers = transferData.transferSummaries;
         const pairMap = lodash.keyBy(pairs.pairs, "id");
@@ -148,22 +149,23 @@ export default class Caculate {
 
         const transferEnriched = transfers.map(transfer => {
             var found = pairMap[transfer.address.toLowerCase()];
-            console.log(transfer);
+            console.log("computeDefi", transfer, found);
             if(found) {
-            transfer.inSushi = true;
+              transfer.inSushi = true;
               if(!(transfer.token in tokensLocked)) {
                 tokensLocked[transfer.token] = { 
                     value: web3utils.toBN(0),
-                    token: found.token0.id == transfer.address ? found.token0 : found.token1
+                    tokenData: found.token0.id == transfer.token ? found.token0 : found.token1
                 }
+                console.log("add ", tokensLocked[transfer.token].token)
               }
               var token = tokensLocked[transfer.token];
               var val = tokensLocked[transfer.token].value;
               tokensLocked[transfer.token].value = val.add(web3utils.toBN(transfer.value));
-              var tokenA = new Token(1, transfer.token, parseInt(token.token.decimals), "", "");
+              var tokenA = new Token(1, transfer.token, parseInt(token.tokenData.decimals), "", "");
               var tokenAmount = new TokenAmount(tokenA, tokensLocked[transfer.token].value);
               tokensLocked[transfer.token].valueDec =  tokenAmount.toFixed(5);
-              tokensLocked[transfer.token].valueUSD = Number(tokenAmount.toFixed(5)) * Number(token.token.derivedETH) * Number(pairs.bundles[0].ethPrice);
+              tokensLocked[transfer.token].valueUSD = Number(tokenAmount.toFixed(5)) * Number(token.tokenData.derivedETH) * Number(pairs.bundles[0].ethPrice);
             } else {
               transfer.inSushi = false;
             }

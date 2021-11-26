@@ -179,7 +179,7 @@ function InfoScreen(props) {
 					</Group>
 					<Group position="apart">
 						<Text weight={400}>Total Balance</Text>
-						<Text>{!balanceData? "Loading" : "$" + (balanceData.balance + balanceData.totalLocked).toFixed(0)}</Text>
+						<Text>{!balanceData? "Loading" : "(~" + balanceData.estimateONE + " ONE) $" + (balanceData.balance + balanceData.totalLocked).toFixed(0)}</Text>
 					</Group>
 					<Group position="apart">
 						<Text weight={400}>Locked in Defi</Text>
