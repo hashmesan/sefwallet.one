@@ -6,9 +6,23 @@ import GuardianOps from "./guardian_ops";
 
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { OneWalletConnector } from '@harmony-react/onewallet-connector'
+import { LedgerConnector } from '@web3-react/ledger-connector'
+import { TrezorConnector } from '@web3-react/trezor-connector'
 
-export const injected = new InjectedConnector({ supportedChainIds: [1666600000] })
+const CHAIN_ID = 1666600000
+const POLLING_INTERVAL = 3000
+const RPC_URL = "https://api.s0.t.hmny.io"
+export const injected = new InjectedConnector({ supportedChainIds: [CHAIN_ID] })
 export const onewallet = new OneWalletConnector({ chainId: 1 })
+export const ledger = new LedgerConnector({ chainId: CHAIN_ID, url: RPC_URL, pollingInterval: POLLING_INTERVAL })
+
+export const trezor = new TrezorConnector({
+  chainId: CHAIN_ID,
+  url: RPC_URL,
+  pollingInterval: POLLING_INTERVAL,
+  manifestEmail: 'security@sefwallet.one',
+  manifestAppUrl: 'https://sefwallet.one'
+})
 
 
 function WalletButton({image, name, ...props}) {
@@ -46,6 +60,12 @@ function WalletAuth({}) {
                             }}/>
                 <WalletButton image={"images/harmony-wallet-blue.png"} name="Harmony" onClick={()=>{
                     activate(onewallet);
+                }}/>
+                <WalletButton image={"images/ledger.svg"} name="Ledger" onClick={()=>{
+                    activate(ledger);
+                }}/>
+                <WalletButton image={"images/trezor.svg"} name="Trezor" onClick={()=>{
+                    activate(trezor);
                 }}/>
             </SimpleGrid>
             </React.Fragment>)
