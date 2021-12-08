@@ -22,7 +22,7 @@ export default function GuardianOps({}) {
     const client = new HarmonyClient("https://api.s0.t.hmny.io", "0x3fa4135B88cE1035Fed373F0801118a3340B37e7");
 
     console.log("library", library, connector, connector instanceof OneWalletConnector);
-
+    
     function loadPage() {
         setVisible(false);
         client.isNameAvailable(name + ".sefwallet.one", 100).then(e=>{
@@ -113,7 +113,7 @@ export default function GuardianOps({}) {
                 setTimeout(loadPage, 5000);
             }).catch(ex=>{
                 console.log("ex", ex)
-                alert("Exception: " + ex.message + " " + ex.data.message)
+                alert("Exception: " + ex.message + " " + (ex.data?.message||""))
             })    
         }
     }
