@@ -19,7 +19,7 @@ export default function AddressToggle({walletAddress}) {
     <div>
       <Group >
         <Notifications/>
-        <Text size="lg" onClick={(e)=>{ notify.show("Copied!", "success", 1000); setCopied(); }}>{address}</Text>
+        <Text size="lg" onClick={(e)=>{ notify.show("Copied!", "success", 1000); setCopied(); }}>{address.substr(0,10) + "..." + address.substr(-10)}</Text>
         <img onClick={(e)=> { e.preventDefault(); setIsToggle(!isToggle)}} src={img} width={isToggle? 25 : 14} />     
       </Group>     
     </div>

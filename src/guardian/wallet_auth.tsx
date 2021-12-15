@@ -73,7 +73,9 @@ function WalletAuth({}) {
             closeButtonLabel="Dismiss"
         >Unlocking the device, open Ethereum, and try again.</Alert>}
             <Space h="md" />
-            <SimpleGrid cols={2} spacing="md">
+            <SimpleGrid cols={2} breakpoints={[{ maxWidth: "sm", cols: 1 },
+                                      { maxWidth: "md", cols: 2 },
+                                      { maxWidth: "lg", cols: 2 }]}>
                 <WalletButton image={"images/metamask.png"} name="Metamask" onClick={()=>{
                             activate(injected);  
                             }}/>
